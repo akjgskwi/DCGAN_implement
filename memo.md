@@ -12,10 +12,11 @@
 ***
 
 ***学習ループ***
+
 以下の繰り返し(訓練回数ぶん)
 1. Discriminatorの学習
-  1. batch_size個だけG(z)を生成する．
-  2. batch_size個だけx[i]を取り出し，D(x)を計算する
+  1. batch_size個だけzを取り出す
+  2. batch_size個だけxを取り出す
   3. Dを更新する
 2. Generatorの学習
   1. batch_size個だけG(z)を生成

@@ -10,7 +10,6 @@ import chainer.links as L
 
 
 batch_size = 128
-Optimizer = optimizers.Adam(alpha= 0.0002, beta1=0.5)
 LReLU = F.LeakyReLU(slope=0.2)
 initializer = initializers.Normal(scale=0.02)
 
@@ -59,3 +58,18 @@ class Discriminator(Chain):
         h = LReLU(self.bn4(self.conv4(h)))
         y = self.linear(h)
         return y
+
+gpu_id = -1 #gpu_id = 0 if using GPU
+
+Generator = self.Generator()
+Discriminator = self.Discriminator()
+if gpu_id >= 0:
+    Generator.to_gpu(gpu_id)
+    Discriminator.to_gpu(gpu_id)
+
+
+optimizer = optimizers.Adam(alpha= 0.0002, beta1=0.5)
+optimizer.setup(Generator)
+optimizer.setup(Discriminator)
+
+z = Variable(2*np.random.uniform(-1.0, 1.0, size=100))
