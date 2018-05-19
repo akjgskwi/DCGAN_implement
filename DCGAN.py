@@ -55,13 +55,13 @@ class Discriminator(Chain):
     def __init__(self, initializer=initializers.Normal(scale=0.02)):
         super(Discriminator, self).__init__(
             conv1=L.Convolution2D(in_channels=1, out_channels=32, pad=1,
-                                  stride=2, ksize=4, outsize=(14, 14), initialW=initializer),
+                                  stride=2, ksize=4, initialW=initializer),
             conv2=L.Convolution2D(in_channels=32, out_channels=64, pad=1,
-                                  stride=2, ksize=4, outsize=(7, 7), initialW=initializer),
-            conv3=L.Convolution2D(in_channels=64, out_channel=128, pad=0,
-                                  stride=2, ksize=3, outsize=(3, 3), initialW=initializer),
+                                  stride=2, ksize=4, initialW=initializer),
+            conv3=L.Convolution2D(in_channels=64, out_channels=128, pad=0,
+                                  stride=2, ksize=3, initialW=initializer),
             conv4=L.Convolution2D(in_channels=128, out_channels=256, pad=1,
-                                  stride=1, ksize=3, outsize=(2, 2), initialW=initializer),
+                                  stride=1, ksize=3, initialW=initializer),
             linear=L.Linear(2 * 2 * 256, 2, initialW=initializer),
             bn1=L.BatchNormalization(14 * 14 * 32),
             bn2=L.BatchNormalization(7 * 7 * 64),
