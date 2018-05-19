@@ -1,5 +1,8 @@
 # 論文([Radford et al. (2015)](https://arxiv.org/pdf/1511.06434.pdf)の実装設定メモ
 
+# Before you read
+This is unfinished. all information you can get can be get from the paper.
+
 # What’s this?
 Implementing DCGAN([Radford et al. (2015)](https://arxiv.org/pdf/1511.06434.pdf)) by using MNIST dataset
 
@@ -40,7 +43,11 @@ Implementing DCGAN([Radford et al. (2015)](https://arxiv.org/pdf/1511.06434.pdf)
 - 全結合を深い層で使わない
 - 最終層はtanhを，それ以外はReLUを使う
 
+## Reference
+*mattya/chainer-DCGAN: Chainer implementation of Deep Convolutional Generative Adversarial Network*
+https://github.com/mattya/chainer-DCGAN
 
+***
 ***To do***
 ***
  * loss関数の作成

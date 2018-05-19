@@ -3,7 +3,8 @@
 import numpy as np
 
 import chainer
-from chainer import cuda, Function, gradient_check, Variable, optimizers, serializers, utils, initializers
+from chainer.datasets import mnist
+from chainer import cuda, Function, gradient_check, Variable, optimizers, serializers, utils, initializers, iterators
 from chainer import Link, Chain, ChainList
 import chainer.functions as F
 import chainer.links as L
@@ -79,29 +80,49 @@ class Discriminator(Chain):
 
 gpu_id = -1  # gpu_id = 0 if using GPU
 
-Generator = self.Generator()
-Discriminator = self.Discriminator()
+Gen = Generator()
+Dis = Discriminator()
 if gpu_id >= 0:
-    Generator.to_gpu(gpu_id)
-    Discriminator.to_gpu(gpu_id)
+    Gen.to_gpu(gpu_id)
+    Dis.to_gpu(gpu_id)
 
 
-optimizer = optimizers.Adam(alpha=0.0002, beta1=0.5)
-optimizer.setup(Generator)
-optimizer.setup(Discriminator)
+optimizer_G = optimizers.Adam(alpha=0.0002, beta1=0.5)
+optimizer_D = optimizers.Adam(alpha=0.0002, beta1=0.5)
+optimizer_G.setup(Gen)
+optimizer_D.setup(Dis)
 
+# 1:pic from dataset 0:pic from Generator
 ans_mnist = np.ones(batch_size, dtype=np.int32)
 ans_gen = np.zeros(batch_size, dtype=np.int32)
 
+
 # Train loop
-# 1:pic from dataset 0:pic from Generator
 # while number of train is sufficient
 # train D and G by pic from G
-z = Variable(np.random.uniform(-1.0, 1.0, (batch_size, z_size)))
-x = Generator(z)
-y_G = Discriminator(x)
-loss_D = F.softmax_cross_entropy(y_G, ans_gen)
-loss_G = F.softmax_cross_entropy(y_G, ans_mnist)
 
-# take a minibatch from MNIST dataset
-# loss_D += F.softmax_cross_entropy(Generator(MNIST), ans_mnist)
+train, test = mnist.get_mnist(withlabel=False)
+mnist_iter = iterators.SerialIterator(train, batch_size)
+max_epoch = 10
+
+while mnist_iter.epoch < max_epoch:
+    z = Variable(np.random.uniform(-1.0, 1.0, (batch_size, z_size)))
+    x = Gen(z)
+    y_G = Dis(x)
+    loss_D = F.softmax_cross_entropy(y_G, ans_gen)
+    loss_G = F.softmax_cross_entropy(y_G, ans_mnist)
+
+    mnist_batch = mnist_iter.next()
+    y_mnist = Dis(mnist_batch)
+    loss_D += F.softmax_cross_entropy(y_mnist, ans_mnist)
+
+    Gen.cleargrads()
+    loss_G.backward()
+    optimizer_G.update()
+
+    Dis.cleargrads()
+    loss_D.backward()
+    optimizer_D.update()
+
+
+serializers.save_npz('Generator.model', Gen)
