@@ -11,8 +11,7 @@ import chainer.links as L
 
 z_size = 100
 batch_size = 128
-LReLU = F.LeakyReLU(slope=0.2)
-
+lrelu = F.leaky_relu
 
 # networkの定義
 
@@ -44,11 +43,11 @@ class Generator(Chain):
         #              (z.data.shape[0], 256, 2, 2))
         h = F.reshape(F.relu(self.bn0(self.linear(z))),
                       (z.data.shape[0], 256, 2, 2))
-        h = F.ReLU(self.bn1(self.deconv1(h)))
-        h = F.ReLU(self.bn2(self.deconv2(h)))
-        h = F.ReLU(self.bn3(self.deconv3(h)))
+        h = F.relu(self.bn1(self.deconv1(h)))
+        h = F.relu(self.bn2(self.deconv2(h)))
+        h = F.relu(self.bn3(self.deconv3(h)))
         # use Tanh as activation function only for the last layer
-        x = F.Tanh(self.deconv4(h))
+        x = F.tanh(self.deconv4(h))
         return x
 
 
@@ -63,20 +62,20 @@ class Discriminator(Chain):
                                   stride=2, ksize=4, initialW=initializer),
             conv3=L.Convolution2D(in_channels=64, out_channels=128, pad=0,
                                   stride=2, ksize=3, initialW=initializer),
-            conv4=L.Convolution2D(in_channels=128, out_channels=256, pad=1,
-                                  stride=1, ksize=3, initialW=initializer),
+            conv4=L.Convolution2D(in_channels=128, out_channels=256, pad=0,
+                                  stride=1, ksize=2, initialW=initializer),
             linear=L.Linear(2 * 2 * 256, 2, initialW=initializer),
-            bn1=L.BatchNormalization(14 * 14 * 32),
-            bn2=L.BatchNormalization(7 * 7 * 64),
-            bn3=L.BatchNormalization(3 * 3 * 128),
-            bn4=L.BatchNormalization(2 * 2 * 256),
+            bn1=L.BatchNormalization(32),
+            bn2=L.BatchNormalization(64),
+            bn3=L.BatchNormalization(128),
+            bn4=L.BatchNormalization(256),
         )
 
     def __call__(self, x):
-        h = LReLU(self.bn1(self.conv1(x)))
-        h = LReLU(self.bn2(self.conv2(h)))
-        h = LReLU(self.bn3(self.conv3(h)))
-        h = LReLU(self.bn4(self.conv4(h)))
+        h = lrelu(self.bn1(self.conv1(x)))
+        h = lrelu(self.bn2(self.conv2(h)))
+        h = lrelu(self.bn3(self.conv3(h)))
+        h = lrelu(self.bn4(self.conv4(h)))
         y = self.linear(h)
         return y
 
@@ -117,7 +116,7 @@ while mnist_iter.epoch < max_epoch:
     loss_G = F.softmax_cross_entropy(y_G, ans_mnist)
 
     mnist_batch = mnist_iter.next()
-    y_mnist = Dis(mnist_batch)
+    y_mnist = Dis(np.array(mnist_batch, dtype=np.float32))
     loss_D += F.softmax_cross_entropy(y_mnist, ans_mnist)
 
     Gen.cleargrads()
