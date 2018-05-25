@@ -2,10 +2,9 @@
 
 import numpy as np
 
-import chainer
+
 from chainer.datasets import mnist
-from chainer import cuda, Function, gradient_check, Variable, optimizers, serializers, utils, initializers, iterators
-from chainer import Link, Chain, ChainList
+from chainer import Chain, Variable, optimizers, serializers, initializers, iterators
 import chainer.functions as F
 import chainer.links as L
 
@@ -23,9 +22,10 @@ class Generator(Chain):
 
     def __init__(self, initializer=initializers.Normal(scale=0.02)):
         super(Generator, self).__init__(
-            linear=L.Linear(100, out_size=2 * 2 * 256, initialW=initializer),
-            deconv1=L.Deconvolution2D(in_channels=256, out_channels=128, pad=1,
-                                      stride=1, ksize=3, outsize=(3, 3), initialW=initializer),
+            linear=L.Linear(z_size, out_size=2 * 2 *
+                            256, initialW=initializer),
+            deconv1=L.Deconvolution2D(in_channels=256, out_channels=128, pad=0,
+                                      stride=1, ksize=2, outsize=(3, 3), initialW=initializer),
             deconv2=L.Deconvolution2D(in_channels=128, out_channels=64, pad=0,
                                       stride=2, ksize=3, outsize=(7, 7), initialW=initializer),
             deconv3=L.Deconvolution2D(in_channels=64, out_channels=32, pad=1,
@@ -39,6 +39,9 @@ class Generator(Chain):
         )
 
     def __call__(self, z):
+        # reshape? transpose?
+        # h = F.reshape(F.relu(self.bn0(self.linear(z))),
+        #              (z.data.shape[0], 256, 2, 2))
         h = F.reshape(F.relu(self.bn0(self.linear(z))),
                       (z.data.shape[0], 256, 2, 2))
         h = F.ReLU(self.bn1(self.deconv1(h)))
@@ -93,8 +96,8 @@ optimizer_G.setup(Gen)
 optimizer_D.setup(Dis)
 
 # 1:pic from dataset 0:pic from Generator
-ans_mnist = np.ones(batch_size, dtype=np.int32)
-ans_gen = np.zeros(batch_size, dtype=np.int32)
+ans_mnist = Variable(np.ones(batch_size, dtype=np.int32))
+ans_gen = Variable(np.zeros(batch_size, dtype=np.int32))
 
 
 # Train loop
@@ -106,7 +109,8 @@ mnist_iter = iterators.SerialIterator(train, batch_size)
 max_epoch = 10
 
 while mnist_iter.epoch < max_epoch:
-    z = Variable(np.random.uniform(-1.0, 1.0, (batch_size, z_size)))
+    z = Variable(np.random.uniform(-1.0, 1.0,
+                                   (batch_size, z_size)).astype(dtype=np.float32))
     x = Gen(z)
     y_G = Dis(x)
     loss_D = F.softmax_cross_entropy(y_G, ans_gen)
