@@ -7,13 +7,11 @@ from chainer.datasets import mnist
 from chainer import Chain, Variable, optimizers, serializers, initializers, iterators
 import chainer.functions as F
 import chainer.links as L
-import time
+
 
 z_size = 100
 batch_size = 128
 lrelu = F.leaky_relu
-
-begin_time = time.time()
 
 # networkの定義
 
@@ -111,7 +109,7 @@ mnist_iter = iterators.SerialIterator(train, batch_size)
 max_epoch = 10
 
 while mnist_iter.epoch < max_epoch:
-    print(mnist_iter.epoch)
+    print("epoch: ", mnist_iter.epoch, "iterations: ", mnist_iter.current_position)
     z = Variable(np.random.uniform(-1.0, 1.0,
                                    (batch_size, z_size)).astype(dtype=np.float32))
     x = Gen(z)
@@ -130,8 +128,6 @@ while mnist_iter.epoch < max_epoch:
     Dis.cleargrads()
     loss_D.backward()
     optimizer_D.update()
-    mnist_iter = mnist_batch
 
-    # the option is proposed by @hiromi_mi
-    print("Epoch {} Iter {} time: {:5}".format(mnist_iter.epoch, mnist_iter.current_position, time.time() - begin_time))
+
 serializers.save_npz('Generator.model', Gen)
