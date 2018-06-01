@@ -52,7 +52,8 @@ class Generator(Chain):
 
 
 class Discriminator(Chain):
-    """Read the digits and investigate these are made by Generator or from sample dataset."""
+    """Read the digits and investigate
+    these are made by Generator or from sample dataset."""
 
     def __init__(self, initializer=initializers.Normal(scale=0.02)):
         super(Discriminator, self).__init__(
