@@ -82,7 +82,6 @@ if __name__ == "main":
             y = self.linear(h)
             return y
 
-
     gpu_id = -1  # gpu_id = 0 if using GPU
 
     Gen = Generator()
@@ -90,7 +89,6 @@ if __name__ == "main":
     if gpu_id >= 0:
         Gen.to_gpu(gpu_id)
         Dis.to_gpu(gpu_id)
-
 
     optimizer_G = optimizers.Adam(alpha=0.0002, beta1=0.5)
     optimizer_D = optimizers.Adam(alpha=0.0002, beta1=0.5)
@@ -129,6 +127,7 @@ if __name__ == "main":
         Dis.cleargrads()
         loss_D.backward()
         optimizer_D.update()
+        if mnist_iter.is_new_epoch:
+            serializers.save_npz("Generator_epoch%d.npz" % mnist_iter.epoch, Gen)
 
-
-    serializers.save_npz('Generator.model', Gen)
+    serializers.save_npz('Generator_final.npz', Gen)
