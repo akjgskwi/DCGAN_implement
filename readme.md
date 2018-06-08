@@ -1,7 +1,7 @@
 # 論文([Radford et al. (2015)](https://arxiv.org/pdf/1511.06434.pdf)の実装設定メモ
 
 # Before you read
-This is unfinished. all information you can get can be get from the paper.
+This is unfinished. all information you can get from this file are from the paper.
 
 # What’s this?
 Implementing DCGAN([Radford et al. (2015)](https://arxiv.org/pdf/1511.06434.pdf)) by using MNIST dataset
@@ -50,6 +50,6 @@ https://github.com/mattya/chainer-DCGAN
 ***
 ***To do***
 ***
- * loss関数の作成
- * 学習ループ(Algorithmに沿って)
+ * epochごとにモデルを保存
+ * 色々な画像に対応させたい
 ***

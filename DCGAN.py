@@ -51,37 +51,39 @@ class Generator(Chain):
         return x
 
 
-if __name__ == "main":
 
-    class Discriminator(Chain):
-        """Read the digits and investigate
-        these are made by Generator or from sample dataset."""
 
-        def __init__(self, initializer=initializers.Normal(scale=0.02)):
-            super(Discriminator, self).__init__(
-                conv1=L.Convolution2D(in_channels=1, out_channels=32, pad=1,
-                                      stride=2, ksize=4, initialW=initializer),
-                conv2=L.Convolution2D(in_channels=32, out_channels=64, pad=1,
-                                      stride=2, ksize=4, initialW=initializer),
-                conv3=L.Convolution2D(in_channels=64, out_channels=128, pad=0,
-                                      stride=2, ksize=3, initialW=initializer),
-                conv4=L.Convolution2D(in_channels=128, out_channels=256, pad=0,
-                                      stride=1, ksize=2, initialW=initializer),
-                linear=L.Linear(2 * 2 * 256, 2, initialW=initializer),
-                bn1=L.BatchNormalization(32),
-                bn2=L.BatchNormalization(64),
-                bn3=L.BatchNormalization(128),
-                bn4=L.BatchNormalization(256),
-            )
+class Discriminator(Chain):
+    """Read the digits and investigate
+    these are made by Generator or from sample dataset."""
 
-        def __call__(self, x):
-            h = lrelu(self.bn1(self.conv1(x)))
-            h = lrelu(self.bn2(self.conv2(h)))
-            h = lrelu(self.bn3(self.conv3(h)))
-            h = lrelu(self.bn4(self.conv4(h)))
-            y = self.linear(h)
-            return y
+    def __init__(self, initializer=initializers.Normal(scale=0.02)):
+        super(Discriminator, self).__init__(
+            conv1=L.Convolution2D(in_channels=1, out_channels=32, pad=1,
+                                  stride=2, ksize=4, initialW=initializer),
+            conv2=L.Convolution2D(in_channels=32, out_channels=64, pad=1,
+                                  stride=2, ksize=4, initialW=initializer),
+            conv3=L.Convolution2D(in_channels=64, out_channels=128, pad=0,
+                                  stride=2, ksize=3, initialW=initializer),
+            conv4=L.Convolution2D(in_channels=128, out_channels=256, pad=0,
+                                  stride=1, ksize=2, initialW=initializer),
+            linear=L.Linear(2 * 2 * 256, 2, initialW=initializer),
+            bn1=L.BatchNormalization(32),
+            bn2=L.BatchNormalization(64),
+            bn3=L.BatchNormalization(128),
+            bn4=L.BatchNormalization(256),
+        )
 
+    def __call__(self, x):
+        h = lrelu(self.bn1(self.conv1(x)))
+        h = lrelu(self.bn2(self.conv2(h)))
+        h = lrelu(self.bn3(self.conv3(h)))
+        h = lrelu(self.bn4(self.conv4(h)))
+        y = self.linear(h)
+        return y
+
+
+if __name__ == "__main__":
     gpu_id = -1  # gpu_id = 0 if using GPU
 
     Gen = Generator()
