@@ -13,5 +13,6 @@ chainer.serializers.load_npz("Generator_final.npz", gen)
 
 z = np.random.uniform(-1.0, 1.0,
                       (128, 100)).astype(dtype=np.float32)
-plt.imshow(gen(z).data[0][0], cmap='gray')
+# change 0th index to see other pics
+plt.imshow(gen(z).data[10][0], cmap='gray')
 plt.show()

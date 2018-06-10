@@ -51,8 +51,6 @@ class Generator(Chain):
         return x
 
 
-
-
 class Discriminator(Chain):
     """Read the digits and investigate
     these are made by Generator or from sample dataset."""
@@ -122,13 +120,14 @@ if __name__ == "__main__":
         y_mnist = Dis(np.array(mnist_batch, dtype=np.float32))
         loss_D += F.softmax_cross_entropy(y_mnist, ans_mnist)
 
+        Dis.cleargrads()
+        loss_D.backward()
+        optimizer_D.update()
+
         Gen.cleargrads()
         loss_G.backward()
         optimizer_G.update()
 
-        Dis.cleargrads()
-        loss_D.backward()
-        optimizer_D.update()
         if mnist_iter.is_new_epoch:
             serializers.save_npz("Generator_epoch%d.npz" % mnist_iter.epoch, Gen)
 
