@@ -6,8 +6,11 @@ Implementing **DCGAN**(Radford et al. (2015)(https://arxiv.org/pdf/1511.06434.pd
 
 ![imgur](https://i.imgur.com/zz8CuoI.png "Generatorの図解")  
 
-## Train loop
+## 使い方
+* `python DCGAN.py`で学習ループが回ります．その際epochごとにGeneratorのモデルがnpz形式で保存されます．変数`max_epoch`を変更することで学習epoch数が変更出来ます．
+* `python generate.py` で画像を生成します．12行目のモデルおよび17行目の各要素をいじると色々な画像が出る(はず)．
 
+## Train loop
 以下の繰り返し(epoch数はxのtrain sample数に依存)
 1. Discriminatorの学習
   1. batch_size個だけzを取り出す
@@ -45,4 +48,4 @@ https://github.com/mattya/chainer-DCGAN
 http://mizti.hatenablog.com/entry/2016/12/10/224426
 ***
 **To do**
-* MNIST以外の様々な画像に対応出来るものを
+* MNIST以外の様々な画像に対応出来るものをつくる

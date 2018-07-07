@@ -12,7 +12,7 @@ import chainer.links as L
 z_size = 100
 batch_size = 128
 lrelu = F.leaky_relu
-
+max_epoch = 20
 # networkの定義
 
 
@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
     train, test = mnist.get_mnist(withlabel=False, ndim=3)
     mnist_iter = iterators.SerialIterator(train, batch_size)
-    max_epoch = 10
+
 
     while mnist_iter.epoch < max_epoch:
         print("epoch: ", mnist_iter.epoch, "iterations: ", mnist_iter.current_position)
